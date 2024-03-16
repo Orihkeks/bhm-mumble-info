@@ -16,16 +16,17 @@ namespace Nekres.Mumble_Info
         private SettingEntry<bool>  _showCursorPosition;
         private SettingEntry<bool> _enablePerformanceCounters;
         private SettingEntry<bool> _swapYZAxes;
+        private SettingEntry<bool> _useCleanCopyStringFormat;
 
         public static SettingEntry<KeyBinding> ToggleInfoBinding => Instance._toggleInfoBinding.Value;
         public static SettingEntry<KeyBinding> ShowCursorPosition => Instance._showCursorPosition.Value;
         public static SettingEntry<bool> EnablePerformanceCounters => Instance._enablePerformanceCounters.Value;
         public static SettingEntry<bool> SwapYZAxes => Instance._swapYZAxes;
-        public static string Vector3FormatString => "xpos=\"{0}\" ypos=\"{1}\" zpos=\"{2}\"";
-        public static string Coordinates2FormatString => "xpos=\"{0}\" ypos=\"{1}\"";
+        public static string Vector3FormatString => Instance._useCleanCopyStringFormat.Value ? "{0}, {1}, {2}" : "xpos=\"{0}\" ypos=\"{1}\" zpos=\"{2}\"";
+        public static string Coordinates2FormatString => Instance._useCleanCopyStringFormat.Value ? "{0}, {1}" : "xpos=\"{0}\" ypos=\"{1}\"";
         public static CultureInfo GetCulture() => CultureInfo.InvariantCulture;
 
-        public ModuleSettings(SettingsCollections settingsCollections)
+        public ModuleSettings(settings settingsCollections)
         {
             Instance = this;
 
@@ -44,6 +45,10 @@ namespace Nekres.Mumble_Info
             _swapYZAxes = settings.DefineSetting("SwapYZAxes", true, 
                 () => "Swap YZ Axes",
                 () => "Swaps the values of the Y and Z axes if enabled.");
+
+            _useCleanCopyStringFormat = settings.DefineSetting("UseCleanCopyStringFormat", false,
+                () => "Use Clean Copy String Format",
+                () => "Use a cleaner String Format for Copy XYZ.");
         }
     }
 }
