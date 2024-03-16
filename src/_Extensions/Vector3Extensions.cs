@@ -8,5 +8,15 @@ namespace Nekres.Mumble_Info
         {
             return new[] {v.X, v.Y, v.Z};
         }
+
+        public static string ToFormatString(this Vector3 vector)
+        {
+            var culture = ModuleSettings.GetCulture();
+            return string.Format(ModuleSettings.Vector3FormatString, vector.X.ToString(culture),
+                ModuleSettings.SwapYZAxes.Value ? vector.Z.ToString(culture): vector.Y.ToString(culture),
+                ModuleSettings.SwapYZAxes.Value ? vector.Y.ToString(culture): vector.Z.ToString(culture)
+            );
+        }
+
     }
 }

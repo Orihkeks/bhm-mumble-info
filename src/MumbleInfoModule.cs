@@ -41,10 +41,10 @@ namespace Nekres.Mumble_Info
 
         #region Settings
 
-        private SettingEntry<KeyBinding> _toggleInfoBinding;
-        private SettingEntry<bool>       _showCursorPosition;
-        internal SettingEntry<bool> EnablePerformanceCounters;
-        internal SettingEntry<bool> SwapYZAxes;
+        private ModuleSettings _moduleSettings;
+        private SettingEntry<KeyBinding> _toggleInfoBinding => _moduleSettings.ToggleInfoBinding;
+        private SettingEntry<bool> _showCursorPosition => _moduleSettings.ShowCursorPosition;
+        internal SettingEntry<bool> EnablePerformanceCounters => _moduleSettings.EnablePerformanceCounters;
 
         #endregion
 
@@ -62,22 +62,9 @@ namespace Nekres.Mumble_Info
 
         private MockService _mockService;
 
+
         protected override void DefineSettings(SettingCollection settings) {
-            _toggleInfoBinding = settings.DefineSetting("ToggleInfoBinding", new KeyBinding(Keys.OemPlus),
-                () => "Toggle display", 
-                () => "Toggles the display of data.");
-
-            _showCursorPosition = settings.DefineSetting("ShowCursorPosition", false,
-                () => "Show cursor position",
-                () => "Whether the cursor's current interface-relative position should be displayed.\nUse [Left Alt] to copy it.");
-
-            EnablePerformanceCounters = settings.DefineSetting("PerfCountersEnabled", false,
-                () => "Show performance counters",
-                () => "Whether performance counters such as RAM and CPU utilization of the Guild Wars 2 process should be displayed.");
-
-            SwapYZAxes = settings.DefineSetting("SwapYZAxes", true, 
-                () => "Swap YZ Axes",
-                () => "Swaps the values of the Y and Z axes if enabled.");
+            _moduleSettings = new ModuleSettings(settings);
         }
 
         protected override void Initialize() {
@@ -97,7 +84,6 @@ namespace Nekres.Mumble_Info
             await LoadPerformanceCounters();
             await QueryManagementObjects();
         }
-
         protected override void Update(GameTime gameTime) {
             UpdateCounter();
             UpdateCursorPos();
@@ -105,7 +91,7 @@ namespace Nekres.Mumble_Info
         }
 
         protected override void OnModuleLoaded(EventArgs e) {
-            _toggleInfoBinding.Value.Enabled = true;
+            _moduleSettings.ToggleInfoBinding.Value.Enabled = true;
             _toggleInfoBinding.Value.Activated += OnToggleInfoBindingActivated;
             _showCursorPosition.SettingChanged += OnShowCursorPositionSettingChanged;
             Gw2Mumble.CurrentMap.MapChanged += OnMapChanged;
